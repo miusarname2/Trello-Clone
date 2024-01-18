@@ -78,7 +78,7 @@ export function WelcomePage2() {
 }
 
 
-function TrelloIcon(props) {
+function TrelloIcon(props:any) {
   return (
     <svg
       {...props}
@@ -100,7 +100,7 @@ function TrelloIcon(props) {
 }
 
 
-function ArrowLeftIcon(props) {
+function ArrowLeftIcon(props:any) {
   return (
     <svg
       {...props}
@@ -121,7 +121,7 @@ function ArrowLeftIcon(props) {
 }
 
 
-function BellIcon(props) {
+function BellIcon(props:any) {
   return (
     <svg
       {...props}
@@ -142,7 +142,7 @@ function BellIcon(props) {
 }
 
 
-function SettingsIcon(props) {
+function SettingsIcon(props:any) {
   return (
     <svg
       {...props}
@@ -163,7 +163,7 @@ function SettingsIcon(props) {
 }
 
 
-function MoreHorizontalIcon(props) {
+function MoreHorizontalIcon(props:any) {
   return (
     <svg
       {...props}

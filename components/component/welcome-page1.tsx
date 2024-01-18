@@ -96,7 +96,7 @@ export function WelcomePage1() {
 }
 
 
-function TrelloIcon(props) {
+function TrelloIcon(props:any) {
   return (
     <svg
       {...props}
@@ -118,7 +118,7 @@ function TrelloIcon(props) {
 }
 
 
-function OptionIcon(props) {
+function OptionIcon(props:any) {
   return (
     <svg
       {...props}
@@ -139,7 +139,7 @@ function OptionIcon(props) {
 }
 
 
-function CheckIcon(props) {
+function CheckIcon(props:any) {
   return (
     <svg
       {...props}
@@ -159,7 +159,7 @@ function CheckIcon(props) {
 }
 
 
-function FileIcon(props) {
+function FileIcon(props:any) {
   return (
     <svg
       {...props}
