@@ -2,6 +2,7 @@
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { XMarkIcon } from "@heroicons/react/24/solid";
 import { AvatarImage, AvatarFallback, Avatar } from "@/components/ui/avatar";
 import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
 import { useState } from "react";
@@ -22,6 +23,25 @@ export function MainList() {
   const [listas, setListas] = useState<Lista[]>([]);
   const [nuevaListaTitulo, setNuevaListaTitulo] = useState("");
   const [listaAbierta, setListaAbierta] = useState(false);
+
+  const eliminarLista = (listaId: string) => {
+    setListas((prevListas) =>
+      prevListas.filter((lista) => lista.id !== listaId)
+    );
+  };
+
+  const eliminarCard = (listaId: string, cardId: string) => {
+    setListas((prevListas) =>
+      prevListas.map((lista) =>
+        lista.id === listaId
+          ? {
+              ...lista,
+              cards: lista.cards.filter((card) => card.id !== cardId),
+            }
+          : lista
+      )
+    );
+  };
 
   const agregarLista = () => {
     if (nuevaListaTitulo.trim() === "") {
@@ -59,98 +79,47 @@ export function MainList() {
     );
   };
 
-  const onDragEnd = (result:any) => {
-  if (!result.destination) {
-    return;
-  }
-
-  setListas((prevListas) => {
-    const newListas = [...prevListas];
-
-    // Verificamos si estamos reordenando tarjetas dentro de una lista
-    if (result.type === "CARD") {
-      const draggedCard = newListas
-        .find((lista) => lista.id === result.source.droppableId)
-        ?.cards[result.source.index];
-
-      if (!draggedCard) {
-        return prevListas;
-      }
-
-      newListas
-        .find((lista) => lista.id === result.source.droppableId)
-        ?.cards.splice(result.source.index, 1);
-      newListas
-        .find((lista) => lista.id === result.destination.droppableId)
-        ?.cards.splice(result.destination.index, 0, draggedCard);
-    } else if (result.type === "LIST") {
-      // Reordenar listas
-      const draggedList = newListas[result.source.index];
-      newListas.splice(result.source.index, 1);
-      newListas.splice(result.destination.index, 0, draggedList);
+  const onDragEnd = (result: any) => {
+    if (!result.destination) {
+      return;
     }
 
-    return newListas;
-  });
-};
+    setListas((prevListas) => {
+      const newListas = [...prevListas];
+
+      // Verificamos si estamos reordenando tarjetas dentro de una lista
+      if (result.type === "CARD") {
+        const draggedCard = newListas.find(
+          (lista) => lista.id === result.source.droppableId
+        )?.cards[result.source.index];
+
+        if (!draggedCard) {
+          return prevListas;
+        }
+
+        newListas
+          .find((lista) => lista.id === result.source.droppableId)
+          ?.cards.splice(result.source.index, 1);
+        newListas
+          .find((lista) => lista.id === result.destination.droppableId)
+          ?.cards.splice(result.destination.index, 0, draggedCard);
+      } else if (result.type === "LIST") {
+        // Reordenar listas
+        const draggedList = newListas[result.source.index];
+        newListas.splice(result.source.index, 1);
+        newListas.splice(result.destination.index, 0, draggedList);
+      }
+
+      return newListas;
+    });
+  };
   return (
     <div className="flex flex-col md:flex-row h-screen">
-      <aside className="w-full md:w-64 bg-[#5E6C84] text-white p-5">
-        <div className="mb-5">
-          <div className="flex items-center justify-between mb-3">
-            <h1 className="text-lg font-semibold">
-              Espacio de trabajo de Trello
-            </h1>
-            <ChevronDownIcon className="text-white" />
-          </div>
-          <p className="text-sm">Gratuito</p>
-        </div>
-        <nav className="mb-5">
-          <ul>
-            <li className="flex items-center justify-between text-sm mb-2 hover:cursor-pointer">
-              <span>Tableros</span>
-              <PlusIcon className="text-white" />
-            </li>
-            <li className="flex items-center justify-between text-sm mb-2 hover:cursor-pointer">
-              <span>Miembros</span>
-              <PlusIcon className="text-white" />
-            </li>
-            <li className="text-sm mb-2">Ajustes del Espacio de trabajo</li>
-          </ul>
-        </nav>
-        <div className="mb-5">
-          <p className="text-sm mb-2">Vistas del Espacio de trabajo</p>
-          <ul>
-            <li className="text-sm mb-2">
-              <a href="#">Tabla</a>
-            </li>
-            <li className="text-sm mb-2">
-              <a href="#">Calendario</a>
-            </li>
-          </ul>
-        </div>
-        <div className="mb-5">
-          <p className="text-sm mb-2">Sus tableros</p>
-          <ul>
-            <li className="text-sm mb-2">
-              <a href="#">Oscar</a>
-            </li>
-            <li className="text-sm mb-2">
-              <a href="#">Mostrar más</a>
-            </li>
-          </ul>
-        </div>
-        <div>
-          <Button className="text-sm bg-transparent border border-gray-200 border-white dark:border-gray-800">
-            Pruebe Premium gratis
-          </Button>
-        </div>
-      </aside>
       <main
         className="flex-1 bg-center bg-cover"
         style={{
           backgroundImage:
-            "url('https://hips.hearstapps.com/hmg-prod/images/demon-slayer-1657889450.jpeg?crop=1xw:1xh;center,top&resize=1200:*')",
+            "url('https://t3.ftcdn.net/jpg/05/85/86/44/360_F_585864419_kgIYUcDQ0yiLOCo1aRjeu7kRxndcoitz.jpg')",
         }}
       >
         <header className="flex items-center justify-between bg-black bg-opacity-50 text-white p-5">
@@ -161,10 +130,10 @@ export function MainList() {
             <span className="text-sm">Visible para el Espacio de trabajo</span>
           </div>
           <div className="flex items-center space-x-4">
-            <Button className="text-sm bg-transparent border border-gray-200 border-white dark:border-gray-800">
+            <Button className="text-sm bg-transparent border  border-white dark:border-gray-800">
               Crear
             </Button>
-            <Button className="text-sm bg-transparent border border-gray-200 border-white dark:border-gray-800">
+            <Button className="text-sm bg-transparent border  border-white dark:border-gray-800">
               Tablero
             </Button>
             <BellIcon className="text-white" />
@@ -174,13 +143,13 @@ export function MainList() {
               placeholder="Buscar"
               type="search"
             />
-            <Button className="text-sm bg-transparent border border-gray-200 border-white dark:border-gray-800">
+            <Button className="text-sm bg-transparent border  border-white dark:border-gray-800">
               Power-Ups
             </Button>
-            <Button className="text-sm bg-transparent border border-gray-200 border-white dark:border-gray-800">
+            <Button className="text-sm bg-transparent border  border-white dark:border-gray-800">
               Automatización
             </Button>
-            <Button className="text-sm bg-transparent border border-gray-200 border-white dark:border-gray-800">
+            <Button className="text-sm bg-transparent border  border-white dark:border-gray-800">
               Filtros
             </Button>
             <Avatar>
@@ -190,13 +159,13 @@ export function MainList() {
               />
               <AvatarFallback>OG</AvatarFallback>
             </Avatar>
-            <Button className="text-sm bg-transparent border border-gray-200 border-white dark:border-gray-800">
+            <Button className="text-sm bg-transparent border  border-white dark:border-gray-800">
               Compartir
             </Button>
           </div>
         </header>
-        <div className="p-5">
-          <div className="bg-white p-3 rounded shadow w-full md:w-64">
+        <div className="p-5 flex">
+          <div className="bg-white p-3 rounded shadow w-full md:w-64 m-2">
             <input
               className="p-2 border-b w-full mb-2 text-gray-500"
               placeholder="Introduzca el título de la lista..."
@@ -219,7 +188,16 @@ export function MainList() {
                   key={index}
                   className="bg-white p-3 rounded shadow w-full md:w-64 mr-3 text-gray-500"
                 >
-                  <h2>{lista.titulo}</h2>
+                  <div className="flex items-center justify-between">
+                    <h2 className="mr-4">{lista.titulo}</h2>
+                    <XMarkIcon
+                      className="h-5 text-red-600 cursor-pointer"
+                      onClick={() => eliminarLista(lista.id)}
+                    >
+                      Eliminar Lista
+                    </XMarkIcon>
+                  </div>
+
                   <Droppable droppableId={lista.id} type="CARD">
                     {(provided, snapshot) => (
                       <div
@@ -242,7 +220,17 @@ export function MainList() {
                                 {...provided.dragHandleProps}
                                 className="bg-gray-100 p-2 my-2 rounded"
                               >
-                                <h3>{card.title}</h3>
+                                <div className="flex justify-between items-center mb-2">
+                                  <h3 className="mr-4">{card.title}</h3>
+                                  <XMarkIcon
+                                  className="h-5 text-red-600 cursor-pointer"
+                                    onClick={() =>
+                                      eliminarCard(lista.id, card.id)
+                                    }
+                                  >
+                                    Eliminar Tarjeta
+                                  </XMarkIcon>
+                                </div>
                                 <p>{card.content}</p>
                               </div>
                             )}

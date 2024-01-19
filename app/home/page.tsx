@@ -1,9 +1,9 @@
-import {MainList} from '@/components/component/main-list';
+import {Home} from '@/components/component/home';
 
 export default function page() {
   return (
     <>
-    <MainList/>
+    <Home/>
     </>
   )
 }
