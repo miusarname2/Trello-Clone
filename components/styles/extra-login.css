@@ -1,0 +1,27 @@
+.tomodi {
+    background-image: url('../../public/wallpaper.jpg');
+    background-size: cover; /* Para PC: La imagen cubrirá todo el fondo */
+    background-repeat: no-repeat;
+    background-position: center center; /* Centra la imagen en el fondo */
+
+    /* Agregar un media query para smartphones */
+    @media only screen and (max-width: 767px) {
+        background-size: contain; /* Para smartphones: La imagen se mantendrá dentro del fondo */
+    }
+
+    /* Modo oscuro */
+    &.dark-mode {
+        position: relative;
+
+        /* Añadir superposición semi-transparente de color oscuro */
+        &::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            right: 0;
+            bottom: 0;
+            left: 0;
+            background: rgba(0, 0, 0, 0.5); /* Puedes ajustar el nivel de opacidad según sea necesario */
+        }
+    }
+}
