@@ -1,3 +1,5 @@
+<img src="https://img.shields.io/badge/State-Developing-green">
+
 # TablonTask
 
 TablonTask is an agile alternative to Trello, designed to help you manage projects with ease through an intuitive dashboard. With its customizable features, efficiency, and power, TablonTask aims to streamline your workflow and enhance your productivity.
