@@ -9,5 +9,9 @@ namespace TrelloBackend.Model.DataModel
         [StringLength(255)]
         public string Description { get; set; }
         public int Position { get; set; }
+
+        public Table Table { get; set; }
+
+        public ICollection<Task> Tasks { get; set; }
     }
 }

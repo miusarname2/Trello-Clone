@@ -9,5 +9,7 @@ namespace TrelloBackend.Model.DataModel
         [StringLength(255)]
         public string Description { get; set; }
 
+        public Column Column { get; set; }
+
     }
 }
