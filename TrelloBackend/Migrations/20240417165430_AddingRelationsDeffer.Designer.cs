@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using TrelloBackend.DataAccess;
 
@@ -11,9 +12,11 @@ using TrelloBackend.DataAccess;
 namespace TrelloBackend.Migrations
 {
     [DbContext(typeof(TrelloDbContext))]
-    partial class TrelloDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240417165430_AddingRelationsDeffer")]
+    partial class AddingRelationsDeffer
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -59,8 +62,6 @@ namespace TrelloBackend.Migrations
                         .HasColumnType("datetime2");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("TableId");
 
                     b.ToTable("Columns");
                 });
@@ -140,8 +141,6 @@ namespace TrelloBackend.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("ColumnId");
-
                     b.ToTable("Tasks");
                 });
 
@@ -188,15 +187,6 @@ namespace TrelloBackend.Migrations
                     b.ToTable("Users");
                 });
 
-            modelBuilder.Entity("TrelloBackend.Model.DataModel.Column", b =>
-                {
-                    b.HasOne("TrelloBackend.Model.DataModel.Table", null)
-                        .WithMany("Columns")
-                        .HasForeignKey("TableId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
             modelBuilder.Entity("TrelloBackend.Model.DataModel.Table", b =>
                 {
                     b.HasOne("TrelloBackend.Model.DataModel.User", null)
@@ -204,25 +194,6 @@ namespace TrelloBackend.Migrations
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-                });
-
-            modelBuilder.Entity("TrelloBackend.Model.DataModel.Task", b =>
-                {
-                    b.HasOne("TrelloBackend.Model.DataModel.Column", null)
-                        .WithMany("Tasks")
-                        .HasForeignKey("ColumnId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
-            modelBuilder.Entity("TrelloBackend.Model.DataModel.Column", b =>
-                {
-                    b.Navigation("Tasks");
-                });
-
-            modelBuilder.Entity("TrelloBackend.Model.DataModel.Table", b =>
-                {
-                    b.Navigation("Columns");
                 });
 
             modelBuilder.Entity("TrelloBackend.Model.DataModel.User", b =>

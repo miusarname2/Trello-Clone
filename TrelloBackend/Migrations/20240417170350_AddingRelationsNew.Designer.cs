@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using TrelloBackend.DataAccess;
 
@@ -11,9 +12,11 @@ using TrelloBackend.DataAccess;
 namespace TrelloBackend.Migrations
 {
     [DbContext(typeof(TrelloDbContext))]
-    partial class TrelloDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240417170350_AddingRelationsNew")]
+    partial class AddingRelationsNew
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
