@@ -12,8 +12,8 @@ namespace TrelloBackend.Model.DataModel
         public string Password { get; set; }
         [Required]
         public string Email { get; set; }
+        public ICollection<Table> Tables { get; set; } = new List<Table >();
 
-        public ICollection<Table> Tables { get; set; } = new List<Table>();
-        
+
     }
 }

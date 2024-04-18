@@ -8,8 +8,7 @@ namespace TrelloBackend.Model.DataModel
         public string Name { get; set; }
         [StringLength(255)]
         public string Description { get; set; }
-
-        public Column Column { get; set; }
+        public int ColumnId { get; set; }
 
     }
 }

@@ -8,9 +8,7 @@ namespace TrelloBackend.Model.DataModel
         public string Name { get; set; }
         [StringLength(255)]
         public string Description { get; set; }
-        
-        public User Creator { get; set; }
-
-        public ICollection<Column> Columns { get; set; }
+        public int UserId { get; set; }
+        public ICollection<Column> Columns { get; set; } = new List<Column>();
     }
 }
