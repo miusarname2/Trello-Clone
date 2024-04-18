@@ -1,6 +1,7 @@
 using TrelloBackend.DataAccess;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
+using TrelloBackend.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -14,6 +15,11 @@ builder.Services.AddDbContext<TrelloDbContext>(options => options.UseSqlServer(c
 // Add services to the container.
 
 builder.Services.AddControllers();
+
+// Add Services
+
+builder.Services.AddScoped<IAccountService,AccountService>();
+
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
