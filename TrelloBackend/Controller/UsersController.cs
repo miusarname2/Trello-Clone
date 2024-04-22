@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using TrelloBackend.DataAccess;
 using TrelloBackend.Model.DataModel;
+using TrelloBackend.Services;
 
 namespace TrelloBackend.Controller
 {
@@ -15,24 +16,26 @@ namespace TrelloBackend.Controller
     public class UsersController : ControllerBase
     {
         private readonly TrelloDbContext _context;
+        private readonly IUserService _userService;
 
-        public UsersController(TrelloDbContext context)
+        public UsersController(TrelloDbContext context,IUserService userService)
         {
             _context = context;
+            _userService = userService;
         }
 
         // GET: api/Users
         [HttpGet]
         public async Task<ActionResult<IEnumerable<User>>> GetUsers()
         {
-            return await _context.Users.Include(u => u.Tables).ToListAsync();
+            return await _userService.ObtainUsers(_context);
         }
 
         // GET: api/Users/5
         [HttpGet("{id}")]
         public async Task<ActionResult<User>> GetUser(int id)
         {
-            var user = await _context.Users.FindAsync(id);
+            var user = await _userService.ObtainUser(_context, id);
 
             if (user == null)
             {
@@ -78,10 +81,14 @@ namespace TrelloBackend.Controller
         [HttpPost]
         public async Task<ActionResult<User>> PostUser(User user)
         {
-            _context.Users.Add(user);
-            await _context.SaveChangesAsync();
+            var userResult = _userService.CreateUser(_context, user);
+            if (userResult != null)
+            {
+                await _context.SaveChangesAsync();
+                return CreatedAtAction("GetUser", new { id = user.Id }, user);
+            }
 
-            return CreatedAtAction("GetUser", new { id = user.Id }, user);
+            return StatusCode(500);
         }
 
         // DELETE: api/Users/5
@@ -94,8 +101,12 @@ namespace TrelloBackend.Controller
                 return NotFound();
             }
 
-            _context.Users.Remove(user);
-            await _context.SaveChangesAsync();
+            var userR = await _userService.DeleteUser(_context,user);
+
+            if (userR == null)
+            {
+                return StatusCode(400);
+            }
 
             return NoContent();
         }

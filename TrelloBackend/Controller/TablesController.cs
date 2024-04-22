@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using TrelloBackend.DataAccess;
 using TrelloBackend.Model.DataModel;
+using TrelloBackend.Services;
 
 namespace TrelloBackend.Controller
 {
@@ -15,24 +16,26 @@ namespace TrelloBackend.Controller
     public class TablesController : ControllerBase
     {
         private readonly TrelloDbContext _context;
+        private readonly ITablesService _tablesService;
 
-        public TablesController(TrelloDbContext context)
+        public TablesController(TrelloDbContext context,ITablesService tablesService)
         {
             _context = context;
+            _tablesService = tablesService;
         }
 
         // GET: api/Tables
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Table>>> GetTables()
         {
-            return await _context.Tables.Include(u => u.Columns).ToListAsync();
+            return await _tablesService.ObtainTables(_context);
         }
 
         // GET: api/Tables/5
         [HttpGet("{id}")]
         public async Task<ActionResult<Table>> GetTable(int id)
         {
-            var table = await _context.Tables.FindAsync(id);
+            var table = await _tablesService.ObtainTable(_context, id);
 
             if (table == null)
             {
@@ -78,23 +81,15 @@ namespace TrelloBackend.Controller
         [HttpPost]
         public async Task<ActionResult<Table>> PostTable(Table table)
         {
-            var UserToModify = await _context.Users.FindAsync(table.UserId);
+            var tableResp = await _tablesService.CreateTable(_context, table);
 
-            if (UserToModify != null)
+            if (tableResp != null)
             {
-                UserToModify.Tables.Add(table);
-                // Imprimir las tablas en la consola antes de guardar cambios
-                Console.WriteLine("Lista de Tables antes de guardar cambios:");
-                foreach (var tables in UserToModify.Tables)
-                {
-                    Console.WriteLine($"ID: {tables.Id}, Nombre: {tables.Name}");
-                }
+                await _context.SaveChangesAsync();
+                return CreatedAtAction("GetTable", new { id = table.Id }, table);
             }
 
-            _context.Tables.Add(table);
-            await _context.SaveChangesAsync();
-
-            return CreatedAtAction("GetTable", new { id = table.Id }, table);
+            return StatusCode(501);
         }
 
         // DELETE: api/Tables/5
@@ -107,8 +102,7 @@ namespace TrelloBackend.Controller
                 return NotFound();
             }
 
-            _context.Tables.Remove(table);
-            await _context.SaveChangesAsync();
+            await _tablesService.DeleteTable(_context, table);
 
             return NoContent();
         }

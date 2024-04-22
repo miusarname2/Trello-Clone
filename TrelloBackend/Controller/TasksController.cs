@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using TrelloBackend.DataAccess;
 using TrelloBackend.Model.DataModel;
+using TrelloBackend.Services;
 using DataModel = TrelloBackend.Model.DataModel;
 
 namespace TrelloBackend.Controller
@@ -16,24 +17,26 @@ namespace TrelloBackend.Controller
     public class TasksController : ControllerBase
     {
         private readonly TrelloDbContext _context;
+        private readonly ITaskService _taskService;
 
-        public TasksController(TrelloDbContext context)
+        public TasksController(TrelloDbContext context,ITaskService taskService)
         {
             _context = context;
+            _taskService = taskService;
         }
 
         // GET: api/Tasks
         [HttpGet]
         public async Task<ActionResult<IEnumerable<DataModel.Task>>> GetTasks()
         {
-            return await _context.Tasks.ToListAsync();
+            return await _taskService.ObtainTasks(_context);
         }
 
         // GET: api/Tasks/5
         [HttpGet("{id}")]
         public async Task<ActionResult<DataModel.Task>> GetTask(int id)
         {
-            var task = await _context.Tasks.FindAsync(id);
+            var task = await _taskService.ObtainTask(_context, id);
 
             if (task == null)
             {
@@ -79,10 +82,15 @@ namespace TrelloBackend.Controller
         [HttpPost]
         public async Task<ActionResult<DataModel.Task>> PostTask(DataModel.Task task)
         {
-            _context.Tasks.Add(task);
-            await _context.SaveChangesAsync();
+            var userResp = await _taskService.CreateTask(_context,task);
+            if (userResp != null)
+            {
+                await _context.SaveChangesAsync();
 
-            return CreatedAtAction("GetTask", new { id = task.Id }, task);
+                return CreatedAtAction("GetTask", new { id = task.Id }, task);
+            }
+
+            return StatusCode(501);
         }
 
         // DELETE: api/Tasks/5
@@ -95,8 +103,12 @@ namespace TrelloBackend.Controller
                 return NotFound();
             }
 
-            _context.Tasks.Remove(task);
-            await _context.SaveChangesAsync();
+            task = await _taskService.DeleteTask(_context, task);
+
+            if (task == null)
+            {
+                return NotFound();
+            }
 
             return NoContent();
         }

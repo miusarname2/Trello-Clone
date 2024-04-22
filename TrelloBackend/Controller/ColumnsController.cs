@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using TrelloBackend.DataAccess;
 using TrelloBackend.Model.DataModel;
+using TrelloBackend.Services;
 
 namespace TrelloBackend.Controller
 {
@@ -15,24 +16,26 @@ namespace TrelloBackend.Controller
     public class ColumnsController : ControllerBase
     {
         private readonly TrelloDbContext _context;
+        private readonly IColumnsService _columnsService;
 
-        public ColumnsController(TrelloDbContext context)
+        public ColumnsController(TrelloDbContext context,IColumnsService columnsService)
         {
             _context = context;
+            _columnsService = columnsService;
         }
 
         // GET: api/Columns
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Column>>> GetColumns()
         {
-            return await _context.Columns.Include(u => u.Tasks).ToListAsync();
+            return await _columnsService.ObtainColumns(_context);
         }
 
         // GET: api/Columns/5
         [HttpGet("{id}")]
         public async Task<ActionResult<Column>> GetColumn(int id)
         {
-            var column = await _context.Columns.FindAsync(id);
+            var column = await _columnsService.ObtainColumn(_context,id);
 
             if (column == null)
             {
@@ -78,15 +81,14 @@ namespace TrelloBackend.Controller
         [HttpPost]
         public async Task<ActionResult<Column>> PostColumn(Column column)
         {
-            var tableToModify = await _context.Tables.FindAsync(column.TableId);
-            if (tableToModify != null)
+            var columns = await _columnsService.CreateColumn(_context, column);
+            if (columns != null)
             {
-                tableToModify.Columns.Add(column);
+                await _context.SaveChangesAsync();
+                return CreatedAtAction("GetColumn", new { id = column.Id }, column);
             }
-            _context.Columns.Add(column);
-            await _context.SaveChangesAsync();
 
-            return CreatedAtAction("GetColumn", new { id = column.Id }, column);
+            return StatusCode(501);
         }
 
         // DELETE: api/Columns/5
@@ -99,8 +101,12 @@ namespace TrelloBackend.Controller
                 return NotFound();
             }
 
-            _context.Columns.Remove(column);
-            await _context.SaveChangesAsync();
+            column = await _columnsService.DeleteColumn(_context, column);
+
+            if (column == null)
+            {
+                return NotFound();
+            }
 
             return NoContent();
         }
