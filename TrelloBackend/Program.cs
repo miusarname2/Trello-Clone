@@ -19,6 +19,10 @@ builder.Services.AddControllers();
 // Add Services
 
 builder.Services.AddScoped<IAccountService,AccountService>();
+builder.Services.AddScoped<IColumnsService,ColumnsService>();
+builder.Services.AddScoped<ITablesService, TablesServices>();
+builder.Services.AddScoped<ITaskService, TaskServices>();
+builder.Services.AddScoped<IUserService, UserService>();
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
